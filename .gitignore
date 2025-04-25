@@ -1,0 +1,5 @@
+# Retirar v9.7fp5_linuxx64_dsdriver.tar.gz de repo
+airflow/docker/v9.7fp5_linuxx64_dsdriver.tar.gz
+
+# Retirar data
+airflow/docker/dags/data
