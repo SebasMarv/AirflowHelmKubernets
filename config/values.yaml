@@ -79,22 +79,11 @@ airflowVersion: "3.0.0"
 # Images
 images:
   airflow:
-    repository: local-airflow
-    tag: test
+    repository: ~
+    tag: ~
     # Specifying digest takes precedence over tag.
     digest: ~
     pullPolicy: IfNotPresent
-
-    persistence:
-      enabled: true
-      existingClaim: ""
-
-      dagPersistence:
-        enabled: true
-        accessMode: ReadWriteMany
-        size: 1Gi
-        storageClassName: ""
-        hostPath: "/opt/airflow/dags"
   # To avoid images with user code, you can turn this to 'true' and
   # all the 'run-airflow-migrations' and 'wait-for-airflow-migrations' containers/jobs
   # will use the images from 'defaultAirflowRepository:defaultAirflowTag' values
@@ -774,16 +763,17 @@ workers:
   extraInitContainers: []
 
   # Mount additional volumes into worker. It can be templated like in the following example:
-  # extraVolumes:
-  #   - name: dags
-  #     hostPath:
-  #       path: /opt/airflow/dags
-  #       type: DirectoryOrCreate
-  
-  # extraVolumeMounts:
-  #   - name: dags
-  #     mountPath: "/opt/airflow/dags"
-  #     readOnly: true
+  #   extraVolumes:
+  #     - name: my-templated-extra-volume
+  #       secret:
+  #          secretName: '{{ include "my_secret_template" . }}'
+  #          defaultMode: 0640
+  #          optional: true
+  #
+  #   extraVolumeMounts:
+  #     - name: my-templated-extra-volume
+  #       mountPath: "{{ .Values.my_custom_path }}"
+  #       readOnly: true
   extraVolumes: []
   extraVolumeMounts: []
 
@@ -991,17 +981,17 @@ scheduler:
   extraInitContainers: []
 
   # Mount additional volumes into scheduler. It can be templated like in the following example:
-  # extraVolumes:
-  #   - name: dags
-  #     hostPath:
-  #       path: /opt/airflow/dags
-  #       type: DirectoryOrCreate
-  
-  # extraVolumeMounts:
-  #   - name: dags
-  #     mountPath: "/opt/airflow/dags"
-  #     readOnly: true
-
+  #   extraVolumes:
+  #     - name: my-templated-extra-volume
+  #       secret:
+  #          secretName: '{{ include "my_secret_template" . }}'
+  #          defaultMode: 0640
+  #          optional: true
+  #
+  #   extraVolumeMounts:
+  #     - name: my-templated-extra-volume
+  #       mountPath: "{{ .Values.my_custom_path }}"
+  #       readOnly: true
   extraVolumes: []
   extraVolumeMounts: []
 
@@ -1512,20 +1502,17 @@ webserver:
   extraInitContainers: []
 
   # Mount additional volumes into webserver. It can be templated like in the following example:
-  # extraVolumes:
-  #   - name: dags
-  #     hostPath:
-  #       path: /opt/airflow/dags
-  #       type: DirectoryOrCreate
-  #     # secret:
-  #       # secretName: '{{ include "my_secret_template" . }}'
-  #       # defaultMode: 0640
-  #       # optional: true
-
-  # extraVolumeMounts:
-  #   - name: dags
-  #     mountPath: "/opt/airflow/dags"
-  #     readOnly: true
+  #   extraVolumes:
+  #     - name: my-templated-extra-volume
+  #       secret:
+  #          secretName: '{{ include "my_secret_template" . }}'
+  #          defaultMode: 0640
+  #          optional: true
+  #
+  #   extraVolumeMounts:
+  #     - name: my-templated-extra-volume
+  #       mountPath: "{{ .Values.my_custom_path }}"
+  #       readOnly: true
   extraVolumes: []
   extraVolumeMounts: []
 
@@ -2122,7 +2109,7 @@ statsd:
   # Add custom annotations to the statsd configmap
   configMapAnnotations: {}
 
-  enabled: false
+  enabled: true
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -2760,7 +2747,6 @@ dags:
   # Where dags volume will be mounted. Works for both persistence and gitSync.
   # If not specified, dags mount path will be set to $AIRFLOW_HOME/dags
   mountPath: ~
-  # mountPath: /opt/airflow/dags
   persistence:
     # Annotations for dags PVC
     annotations: {}
@@ -2769,31 +2755,30 @@ dags:
     # Volume size for dags
     size: 1Gi
     # If using a custom storageClass, pass name here
-    storageClassName: ""
+    storageClassName:
     # access mode of the persistent volume
-    accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
     ## the name of an existing PVC to use
     existingClaim:
     ## optional subpath for dag volume mount
-    # hostPath: "/opt/airflow/dags"
     subPath: ~
   gitSync:
-    enabled: true
+    enabled: false
 
     # git repo clone url
     # ssh example: git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/SebasMarv/AirflowHelmKubernets.git
-    branch: main
+    repo: https://github.com/apache/airflow.git
+    branch: v2-2-stable
     rev: HEAD
     # The git revision (branch, tag, or hash) to check out, v4 only
-    ref: HEAD
+    ref: v2-2-stable
     depth: 1
     # the number of consecutive failures allowed before aborting
     maxFailures: 0
     # subpath within the repo where dags are located
     # should be "" if dags are at repo root
-    subPath: "airflow/docker/dags"
+    subPath: "tests/dags"
     # if your repo needs a user name password
     # you can load them to a k8s secret like the one below
     #   ---
@@ -2844,7 +2829,7 @@ dags:
     # low values cause more traffic to the remote git repository
     # Go-style duration string (e.g. "100ms" or "0.1s" = 100ms).
     # For backwards compatibility, wait will be used if it is specified.
-    period: 60s
+    period: 5s
     wait: ~
     # add variables from secret into gitSync containers, such proxy-config
     envFrom: ~
