@@ -15,7 +15,7 @@ with DAG(
     dag_id='hola_mundo_dag',
     default_args=default_args,
     description='Un DAG que imprime Hola Mundo',
-    schedule_interval= '*/10 * * * *',
+    schedule= '*/10 * * * *',
     start_date=datetime(2023, 1, 1),
     catchup=False,
     tags=['example'],

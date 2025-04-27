@@ -95,7 +95,7 @@ with DAG(
     'procesar_facturas_dag_1',
     default_args=default_args,
     description='DAG para procesar facturas desde un archivo JSON y cargarlas en PostgreSQL',
-    schedule_interval= '*/10 * * * *',
+    schedule= '*/10 * * * *',
     catchup=False,
 ) as dag:
     for i in range(1, 3):

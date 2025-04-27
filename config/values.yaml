@@ -64,11 +64,16 @@ containerLifecycleHooks: {}
 # Used for mount paths
 airflowHome: /opt/airflow
 
-# Default airflow repository -- overridden by all the specific images below
-defaultAirflowRepository: apache/airflow
-
-# Default airflow tag to deploy
+# ===================================================================================CAMBIO AQUI
+# Repositorios por default para tomar en el despliegue de Airflow
+defaultAirflowRepository: apache/airflow # Version de dockerhub
 defaultAirflowTag: "3.0.0"
+
+# Repositorios por modificados para tomar en el despliegue de Airflow
+# defaultAirflowRepository: local-airflow # Version local de minikube/docker
+# defaultAirflowTag: "test"
+# ===================================================================================CAMBIO AQUI
+
 
 # Default airflow digest. If specified, it takes precedence over tag
 defaultAirflowDigest: ~
@@ -83,7 +88,10 @@ images:
     tag: ~
     # Specifying digest takes precedence over tag.
     digest: ~
-    pullPolicy: IfNotPresent
+# ===================================================================================CAMBIO AQUI
+    # pullPolicy: Never # Cambia a Never para forzar el uso de la imagen local
+    pullPolicy: IfNotPresent # Cambia a Never para forzar el uso de la imagen local
+# ===================================================================================CAMBIO AQUI
   # To avoid images with user code, you can turn this to 'true' and
   # all the 'run-airflow-migrations' and 'wait-for-airflow-migrations' containers/jobs
   # will use the images from 'defaultAirflowRepository:defaultAirflowTag' values
@@ -1256,6 +1264,10 @@ migrateDatabaseJob:
 
 apiServer:
 
+# ===================================================================================CAMBIO AQUI
+  # Agregar linea para inhabilitar apiServer del despliegue.
+  # enabled: false
+# ===================================================================================CAMBIO AQUI
   # Labels specific to workers objects and pods
   labels: {}
 
@@ -2109,7 +2121,7 @@ statsd:
   # Add custom annotations to the statsd configmap
   configMapAnnotations: {}
 
-  enabled: true
+  enabled: false
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -2710,7 +2722,10 @@ config:
     worker_container_repository: '{{ .Values.images.airflow.repository | default .Values.defaultAirflowRepository }}'
     worker_container_tag: '{{ .Values.images.airflow.tag | default .Values.defaultAirflowTag }}'
     multi_namespace_mode: '{{ ternary "True" "False" .Values.multiNamespaceMode }}'
-
+# ===================================================================================CAMBIO AQUI
+  api_auth:
+    jwt_secret: "Sf9KgV8ZehqSpK7KMgqHZSipf7fMw07lQtEP8eqwrs0="
+# ===================================================================================CAMBIO AQUI
 # yamllint enable rule:line-length
 
 # Whether Airflow can launch workers and/or pods in multiple namespaces
@@ -2762,23 +2777,50 @@ dags:
     existingClaim:
     ## optional subpath for dag volume mount
     subPath: ~
-  gitSync:
-    enabled: false
 
-    # git repo clone url
-    # ssh example: git@github.com:apache/airflow.git
-    # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/apache/airflow.git
-    branch: v2-2-stable
+
+# ===================================================================================CAMBIO AQUI
+  gitSync:
+# CONFIGURACION POR DEFAULT
+    # enabled: false
+    # repo: https://github.com/apache/airflow.git
+    # branch: v2-2-stable
+    # rev: HEAD
+    # ref: v2-2-stable
+    # depth: 1
+    # subPath: "tests/dags"
+    # wait: ~
+    # maxFailures: 0
+    # containerName: git-sync
+    # uid: 65533
+    # resources: {}
+    # #  limits:
+    # #   cpu: 100m
+    # #   memory: 128Mi
+    # #  requests:
+    # #   cpu: 100m
+    # #   memory: 128Mi
+
+# CONFIGURACION POR MODIFICADA
+    enabled: true
+    repo: https://github.com/SebasMarv/AirflowHelmKubernets.git
+    branch: main
     rev: HEAD
-    # The git revision (branch, tag, or hash) to check out, v4 only
-    ref: v2-2-stable
     depth: 1
-    # the number of consecutive failures allowed before aborting
-    maxFailures: 0
-    # subpath within the repo where dags are located
-    # should be "" if dags are at repo root
-    subPath: "tests/dags"
+    subPath: "airflow/docker/dags"
+    wait: 60
+    maxFailures: 3
+    containerName: git-sync
+    uid: 65533
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"
+# ===================================================================================CAMBIO AQUI
+
     # if your repo needs a user name password
     # you can load them to a k8s secret like the one below
     #   ---
@@ -2830,15 +2872,12 @@ dags:
     # Go-style duration string (e.g. "100ms" or "0.1s" = 100ms).
     # For backwards compatibility, wait will be used if it is specified.
     period: 5s
-    wait: ~
     # add variables from secret into gitSync containers, such proxy-config
     envFrom: ~
     # envFrom: |
     #   - secretRef:
     #       name: 'proxy-config'
 
-    containerName: git-sync
-    uid: 65533
 
     # When not set, the values defined in the global securityContext will be used
     securityContext: {}
@@ -2866,14 +2905,6 @@ dags:
     # emptyDirConfig:
     #   sizeLimit: 1Gi
     #   medium: Memory
-
-    resources: {}
-    #  limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    #  requests:
-    #   cpu: 100m
-    #   memory: 128Mi
 
 logs:
   # Configuration for empty dir volume (if logs.persistence.enabled == false)
