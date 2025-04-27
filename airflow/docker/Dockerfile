@@ -52,10 +52,6 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     unixodbc-dev
 
-# D:\Users\USER\Desktop\airflow-test\airflow-oficial-helm\airflow\dags\proceso_1.py
-# COPY D:/Users/USER/Desktop/airflow-test/airflow-oficial-helm/airflow/dags /opt/airflow/dags
-COPY /dags /opt/airflow/dags
-
 USER airflow
 # Instalar el paquete de proveedores
 RUN pip install apache-airflow
@@ -66,4 +62,3 @@ RUN pip install apache-airflow-providers-microsoft-azure
 RUN pip install apache-airflow-providers-common-sql
 RUN pip install pandas
 RUN pip install sqlalchemy
-RUN pip install tqdm

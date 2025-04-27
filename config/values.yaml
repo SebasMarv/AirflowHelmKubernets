@@ -66,12 +66,12 @@ airflowHome: /opt/airflow
 
 # ===================================================================================CAMBIO AQUI
 # Repositorios por default para tomar en el despliegue de Airflow
-defaultAirflowRepository: apache/airflow # Version de dockerhub
-defaultAirflowTag: "3.0.0"
+# defaultAirflowRepository: apache/airflow # Version de dockerhub
+# defaultAirflowTag: "3.0.0"
 
 # Repositorios por modificados para tomar en el despliegue de Airflow
-# defaultAirflowRepository: local-airflow # Version local de minikube/docker
-# defaultAirflowTag: "test"
+defaultAirflowRepository: local-airflow # Version local de minikube/docker
+defaultAirflowTag: "test"
 # ===================================================================================CAMBIO AQUI
 
 
