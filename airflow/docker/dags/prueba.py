@@ -1,9 +1,11 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+import logging
 from datetime import datetime
 
 def hello_world():
     print("Hola Mundo")
+    logging.info("Hola Mundo")
 
 with DAG(
     dag_id='hola_mundo_dag',

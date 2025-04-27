@@ -66,20 +66,27 @@ airflowHome: /opt/airflow
 
 # ===================================================================================CAMBIO AQUI
 # Repositorios por default para tomar en el despliegue de Airflow
-# defaultAirflowRepository: apache/airflow # Version de dockerhub
-# defaultAirflowTag: "3.0.0"
+defaultAirflowRepository: apache/airflow # Version de dockerhub
+defaultAirflowTag: "3.0.0"
 
 # Repositorios por modificados para tomar en el despliegue de Airflow
-defaultAirflowRepository: local-airflow # Version local de minikube/docker
-defaultAirflowTag: "test"
+# defaultAirflowRepository: local-airflow # Version local de minikube/docker
+# defaultAirflowTag: "3.0.0"
 # ===================================================================================CAMBIO AQUI
-
 
 # Default airflow digest. If specified, it takes precedence over tag
 defaultAirflowDigest: ~
 
 # Airflow version (Used to make some decisions based on Airflow Version being deployed)
 airflowVersion: "3.0.0"
+
+# ===================================================================================CAMBIO AQUI 
+# Agregar los paquetes adicionales de Python
+extraPipPackages:
+  - "pandas"
+  - "matplotlib"
+  - "openpyxl"
+# ===================================================================================CAMBIO AQUI 
 
 # Images
 images:
@@ -2680,7 +2687,13 @@ config:
     rbac: 'True'
   celery:
     flower_url_prefix: '{{ ternary "" .Values.ingress.flower.path (eq .Values.ingress.flower.path "/") }}'
-    worker_concurrency: 16
+# ===================================================================================CAMBIO AQUI
+    # El numero de worker concurrency es muy alto y puede causar problemas de rendimiento
+    # worker_concurrency: 16
+    
+    # Se bajo el numero de worker concurrency a 4 para evitar problemas de rendimiento
+    worker_concurrency: 4
+# ===================================================================================CAMBIO AQUI
   scheduler:
     standalone_dag_processor: '{{ ternary "True" "False" (or (semverCompare ">=3.0.0" .Values.airflowVersion) (.Values.dagProcessor.enabled | default false)) }}'
     # statsd params included for Airflow 1.10 backward compatibility; moved to [metrics] in 2.0
@@ -2871,7 +2884,7 @@ dags:
     # low values cause more traffic to the remote git repository
     # Go-style duration string (e.g. "100ms" or "0.1s" = 100ms).
     # For backwards compatibility, wait will be used if it is specified.
-    period: 5s
+    period: 60s
     # add variables from secret into gitSync containers, such proxy-config
     envFrom: ~
     # envFrom: |

@@ -1,4 +1,5 @@
-FROM apache/airflow:2.10.4
+# FROM apache/airflow:2.10.4
+FROM apache/airflow:3.0.0
 USER root
 
 RUN mkdir -p /opt/odbc/drivers
