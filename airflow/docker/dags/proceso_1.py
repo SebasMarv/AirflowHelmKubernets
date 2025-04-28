@@ -19,7 +19,7 @@ def procesar_json(**kwargs):
         ti = kwargs['ti']
         conf = kwargs['dag_run'].conf
         
-        if not conf or 'value_1' not in conf:
+        if not conf or 'trama' not in conf:
             logging.error("No se encontraron datos en la petición o el formato es incorrecto")
             raise ValueError("Datos de entrada inválidos: Se requiere el campo 'value_1'")
         
