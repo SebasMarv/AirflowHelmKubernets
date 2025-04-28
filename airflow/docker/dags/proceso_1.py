@@ -25,6 +25,7 @@ def procesar_json(**kwargs):
         datos = [conf['trama']]
         
         logging.info(f"Datos recibidos exitosamente. Procesando registro JSON")
+        logging.info(f"Datos recibidos exitosamente: {datos}")
         
         contador = 0
         for item in datos:
