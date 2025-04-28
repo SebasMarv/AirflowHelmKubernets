@@ -1,16 +1,20 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
-import json
-import pandas as pd
-import sqlalchemy as sa
 import logging
 
 # Configuración de la base de datos
 DB_CONNECTION = 'postgresql://postgres:test1234@host.docker.internal:5435/postgres'
-engine = sa.create_engine(DB_CONNECTION)
 
 def procesar_json(**kwargs):
+    # Mover importaciones pesadas dentro de la función
+    import json
+    import pandas as pd
+    import sqlalchemy as sa
+    
+    # Crear el engine solo cuando se necesita
+    engine = sa.create_engine(DB_CONNECTION)
+    
     logging.info("Iniciando procesamiento del JSON recibido")
     facturas = []
 
@@ -25,7 +29,6 @@ def procesar_json(**kwargs):
         datos = [conf['trama']]
         
         logging.info(f"Datos recibidos exitosamente. Procesando registro JSON")
-        logging.info(f"Datos recibidos exitosamente: {datos}")
         
         contador = 0
         for item in datos:
@@ -89,7 +92,6 @@ with DAG(
     procesar_facturas_task = PythonOperator(
         task_id='procesar_facturas',
         python_callable=procesar_json,
-        # Eliminado: provide_context=True
     )
 
     procesar_facturas_task
