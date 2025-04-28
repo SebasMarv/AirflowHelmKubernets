@@ -1,9 +1,10 @@
 from airflow import DAG
+from airflow.sdk import DAG
 from airflow.operators.python import PythonOperator
 import logging
 from datetime import datetime
 
-def hello_world():
+def hello_world(**context):
     print("Hola Mundo")
     dag_run = context['dag_run']
     value_test = dag_run.conf.get("value_1")
