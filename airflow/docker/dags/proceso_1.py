@@ -1,4 +1,3 @@
-from airflow.sdk import DAG
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
@@ -21,9 +20,9 @@ def procesar_json(**kwargs):
         
         if not conf or 'trama' not in conf:
             logging.error("No se encontraron datos en la petición o el formato es incorrecto")
-            raise ValueError("Datos de entrada inválidos: Se requiere el campo 'value_1'")
+            raise ValueError("Datos de entrada inválidos: Se requiere el campo 'trama'")
         
-        datos = [conf['value_1']]
+        datos = [conf['trama']]
         
         logging.info(f"Datos recibidos exitosamente. Procesando registro JSON")
         
@@ -89,7 +88,7 @@ with DAG(
     procesar_facturas_task = PythonOperator(
         task_id='procesar_facturas',
         python_callable=procesar_json,
-        provide_context=True,
+        # Eliminado: provide_context=True
     )
 
     procesar_facturas_task
