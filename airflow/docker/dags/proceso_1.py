@@ -83,7 +83,7 @@ with DAG(
     'procesar_facturas_api',
     default_args=default_args,
     description='DAG para procesar facturas desde una API REST y cargarlas en PostgreSQL',
-    schedule_interval=None,
+    schedule=None,
     catchup=False,
 ) as dag:
     procesar_facturas_task = PythonOperator(
