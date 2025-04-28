@@ -5,7 +5,9 @@ from datetime import datetime
 
 def hello_world():
     print("Hola Mundo")
-    logging.info("Hola Mundo")
+    dag_run = context['dag_run']
+    value_test = dag_run.conf.get("value_1")
+    logging.info(f"Valor recibido: {value_test}")
 
 with DAG(
     dag_id='hola_mundo_dag',
