@@ -79,7 +79,7 @@ default_args = {
 }
 
 with DAG(
-    'procesar_facturas_api',
+    'procesar_facturas_api_1',
     default_args=default_args,
     description='DAG para procesar facturas desde una API REST y cargarlas en PostgreSQL',
     schedule=None,

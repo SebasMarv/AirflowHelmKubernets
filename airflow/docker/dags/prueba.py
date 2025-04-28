@@ -11,7 +11,7 @@ def hello_world(**context):
     logging.info(f"Valor recibido: {value_test}")
 
 with DAG(
-    dag_id='hola_mundo_dag',
+    dag_id='api_trigger_context',
     start_date=datetime(2025, 4, 28),
     catchup=False,
 ) as dag:
