@@ -53,12 +53,12 @@ def procesar_json(**kwargs):
         ti = kwargs['ti']
         conf = kwargs['dag_run'].conf
         
-        if not conf or 'tramas' not in conf:
+        if not conf or 'trama' not in conf:
             logging.error("No se encontraron datos en la petición o el formato es incorrecto")
-            raise ValueError("Datos de entrada inválidos: Se requiere el campo 'tramas'")
+            raise ValueError("Datos de entrada inválidos: Se requiere el campo 'trama'")
         
-        # Ahora esperamos un array de tramas
-        datos = conf['tramas']
+        # Convertimos la trama única a un array de una sola trama
+        datos = [conf['trama']]  # Envolvemos la trama en una lista
         total_tramas = len(datos)
         logging.info(f"Se recibieron {total_tramas} tramas para procesar")
         
