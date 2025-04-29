@@ -3,3 +3,6 @@ airflow/docker/v9.7fp5_linuxx64_dsdriver.tar.gz
 
 # Retirar data
 airflow/docker/dags/data
+
+# Retirar pruebas
+airflow/dev
