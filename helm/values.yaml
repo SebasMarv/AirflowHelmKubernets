@@ -920,7 +920,9 @@ scheduler:
 
   # Airflow 2.0 allows users to run multiple schedulers,
   # However this feature is only recommended for MySQL 8+ and Postgres
-  replicas: 1
+# ===================================================================================CAMBIO AQUI
+  replicas: 2
+# ===================================================================================CAMBIO AQUI
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -2673,6 +2675,11 @@ config:
     colored_console_log: 'False'
     remote_logging: '{{- ternary "True" "False" (or .Values.elasticsearch.enabled .Values.opensearch.enabled) }}'
     auth_manager: "airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager"
+# ===================================================================================CAMBIO AQUI
+    parallelism: 16  # Reducir el paralelismo global
+    dag_concurrency: 8  # Reducir la concurrencia de tareas por DAG
+    max_active_runs_per_dag: 4  # Limitar ejecuciones paralelas de DAGs
+# ===================================================================================CAMBIO AQUI
   logging:
     remote_logging: '{{- ternary "True" "False" (or .Values.elasticsearch.enabled .Values.opensearch.enabled) }}'
     colored_console_log: 'False'
@@ -2703,6 +2710,10 @@ config:
     statsd_host: '{{ printf "%s-statsd" (include "airflow.fullname" .) }}'
     # `run_duration` included for Airflow 1.10 backward compatibility; removed in 2.0.
     run_duration: 41460
+# ===================================================================================CAMBIO AQUI
+    max_threads: 4  # Número de hilos para programar tareas
+    parsing_processes: 2  # Procesos para parsear DAGs
+# ===================================================================================CAMBIO AQUI
   elasticsearch:
     json_format: 'True'
     log_id_template: "{dag_id}_{task_id}_{execution_date}_{try_number}"
